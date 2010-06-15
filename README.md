@@ -1,6 +1,6 @@
 # Paging Plugin for CakePHP 1.3+
 
-*This plugin not testing. please test me. :) *
+**This plugin not testing. please test me. :)**
 
 ## Installation
 
@@ -20,7 +20,7 @@ movo to APP/plugins/
         
         var $paginateType = 'public';
         
-        var $options = array(
+        var $paginateOptions = array(
             'public' => array(
                 'fields' => array('*'),
                 'conditions' => array(
