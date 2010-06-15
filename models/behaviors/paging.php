@@ -1,6 +1,6 @@
 <?php
 /**
- * PaginateModel Behavior for CakePHP 1.3
+ * Paging Behavior for CakePHP 1.3
  *
  * Copyright 2010, nojimage (http://php-tips.com/)
  *
@@ -23,10 +23,7 @@
  */
 class PagingBehavior extends ModelBehavior {
 
-    var $defaults = array(
-        'options' => array(),
-        'virtualFieldsCollection' => array(),
-    );
+    var $defaults = array();
 
     /**
      *
@@ -37,66 +34,12 @@ class PagingBehavior extends ModelBehavior {
 
         $config = am($this->defaults, $config);
 
-        if (!empty($model->options)) {
-            $config['options'] = am($config['options'], $model->options);
-        }
-
-        if (!empty($model->virtualFieldsCollection)) {
-            $config['virtualFieldsCollection'] = am($config['virtualFieldsCollection'], $model->virtualFieldsCollection);
+        if (!empty($model->paginateOptions)) {
+            $config = am($config, $model->paginateOptions);
         }
 
         $this->settings[$model->alias] = $config;
 
-    }
-
-    /**
-     *
-     * @param AppModel $model
-     * @param array    $query
-     */
-    function beforeFind(&$model, $query = array()) {
-
-        if (!empty($query['extra']['type']) && !array_key_exists($query['extra']['type'], $model->_findMethods)) {
-
-            if (isset($query['virtualFields'])) {
-                $virtualFields = Set::normalize($query['virtualFields']);
-                unset($query['virtualFields']);
-
-                foreach ($virtualFields as $key => $sql) {
-                    if (empty($sql)) {
-                        if (isset($this->settings[$model->alias]['virtualFieldsCollection'][$key])) {
-                            $virtualFields[$key] = $this->settings[$model->alias]['virtualFieldsCollection'][$key];
-                        } else {
-                            unset($virtualFields[$key]);
-                        }
-                    }
-                }
-
-                if (!empty($virtualFields)){
-
-                    $this->settings[$model->alias]['tempVirtualFields'] == $model->virtualFields;
-                    $model->virtualFields = array_merge($model->virtualFields, $virtualFields);
-
-                }
-            }
-        }
-
-        return true;
-    }
-
-    /**
-     *
-     * @param $model
-     * @param $results
-     * @param $primary
-     */
-    function afterFind(&$model, &$results, $primary) {
-
-        if(isset($this->settings[$model->alias]['tempVirtualFields'])) {
-            $model->virtualFields = $this->settings[$model->alias]['tempVirtualFields'];
-            unset($this->settings[$model->alias]['tempVirtualFields']);
-        }
-        return true;
     }
 
     /**
@@ -111,14 +54,14 @@ class PagingBehavior extends ModelBehavior {
             $type = $model->paginateType;
         }
 
-        if (empty($type) || !isset($this->settings[$model->alias]['options'][$type])) {
+        if (empty($type) || !isset($this->settings[$model->alias][$type])) {
             return array();
         }
 
-        if (empty($this->settings[$model->alias]['options'][$type])) {
-            $this->settings[$model->alias]['options'][$type]['type'] = $type;
+        if (empty($this->settings[$model->alias][$type])) {
+            $this->settings[$model->alias][$type]['type'] = $type;
         }
 
-        return $this->settings[$model->alias]['options'][$type];
+        return $this->settings[$model->alias][$type];
     }
 }

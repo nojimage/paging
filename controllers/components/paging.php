@@ -1,6 +1,6 @@
 <?php
 /**
- * PaginateModelComponent for CakePHP 1.3
+ * PagingComponent for CakePHP 1.3
  *
  * Copyright 2010, nojimage (http://php-tips.com/)
  *
@@ -66,7 +66,10 @@ class PagingComponent extends Object {
             $this->Controller->{$modelName} = ClassRegistry::init($modelName);
         }
 
-        if (empty($this->Controller->{$modelName}) || !in_array('getPaginateOptions', array_keys($this->Controller->{$modelName}->Behaviors->methods()))) {
+        if (empty($this->Controller->{$modelName}) || (
+        !method_exists($this->Controller->{$modelName}, 'getPaginateOptions')
+        && !in_array('getPaginateOptions', array_keys($this->Controller->{$modelName}->Behaviors->methods()))
+        )) {
             return false;
         }
 
