@@ -40,6 +40,28 @@ class Author extends AppModel {
 
 }
 
+class AliasPost extends Post {
+
+    var $useTable = 'posts';
+
+    var $alias = 'Post';
+
+    var $paginateType = 'public';
+
+    var $paginateOptions = array(
+        'public' => array(
+            'conditions' => array('Post.published' => 'Y'),
+            'limit' => 1,
+            'order' => array('Post.created' => 'DESC'),
+    ),
+        'all' => array(
+            'limit' => 20,
+            'order' => array('Post.created' => 'ASC'),
+    ),
+    );
+
+}
+
 class PostsController extends AppController {
 }
 
@@ -68,10 +90,12 @@ class PagingTestCase extends CakeTestCase {
         $this->Paging = new PagingComponent();
         $this->Post   = ClassRegistry::init('Post');
         $this->Author = ClassRegistry::init('Author');
+        $this->AliasPost = ClassRegistry::init('AliasPost');
     }
 
     function endTest()
     {
+        unset($this->AliasPost);
         unset($this->Author);
         unset($this->Post);
         unset($this->Paging);
@@ -102,6 +126,15 @@ class PagingTestCase extends CakeTestCase {
         $result = $this->Paging->Controller->paginate('Author');
         $this->assertEqual($result[1], 'mariano');
         $this->assertEqual(count($result), 4);
+
+        // --
+        $this->Paging->setType('AliasPost', 'public');
+
+        $this->assertEqual($this->Paging->Controller->paginate['Post'], $this->AliasPost->paginateOptions['public']);
+
+        $result = $this->Paging->Controller->paginate();
+        $this->assertEqual($result[0]['Post']['id'], 3);
+        $this->assertEqual(count($result), 1);
     }
 
     function testStartup()

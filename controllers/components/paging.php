@@ -73,7 +73,7 @@ class PagingComponent extends Object {
             return false;
         }
 
-        $this->Controller->paginate[$modelName] = $this->Controller->{$modelName}->getPaginateOptions($type);
+        $this->Controller->paginate[$this->Controller->{$modelName}->alias] = $this->Controller->{$modelName}->getPaginateOptions($type);
 
         return true;
     }
